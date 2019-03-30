@@ -63,6 +63,6 @@ class WebApp:
         run_app(app, host=self.host, port=self.port)
 
 
-if __name__ == '__main__':
-    w = WebApp('0.0.0.0', 8000)
-    w.run_server()
+def run_server(host='0.0.0.0', port=800, browsers=1, max_cap=10):
+    w = WebApp(host, port)
+    w.run_server(browsers=browsers, max_cap=max_cap)
