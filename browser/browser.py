@@ -67,13 +67,13 @@ class BrowserRender:
         else:
             self._browser = await launch(headless=self._headless)
 
-    async def __check_browser_created(self):
+    async def check_browser_created(self):
         async with self._semaphore:
             if self._browser is None:
                 await self._create_browser()
 
     async def inject_script(self, url: str, script: str, **kwargs):
-        await self.__check_browser_created()
+        await self.check_browser_created()
         page_retrieved = False
         page = await self._browser.newPage()
         async with async_timeout.timeout(kwargs.get('timeout', 15)):
@@ -97,7 +97,7 @@ class BrowserRender:
                     await page.close()
 
     async def render_elements(self, url: str, selector: str, method: str = 'outerHTML', **kwargs):
-        await self.__check_browser_created()
+        await self.check_browser_created()
         page_retrieved = False
         found_elements = []
         page = await self._browser.newPage()
@@ -125,7 +125,7 @@ class BrowserRender:
                     await page.close()
 
     async def get_request(self, url: str, timeout: int = 15, post_load_wait: int = 0) -> Response:
-        await self.__check_browser_created()
+        await self.check_browser_created()
         page_retrieved = False
         page = await self._browser.newPage()
         async with async_timeout.timeout(timeout):

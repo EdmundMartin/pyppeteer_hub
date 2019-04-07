@@ -1,7 +1,8 @@
 import asyncio
-from typing import List, Union
+from typing import List, Union, Dict
 
 import async_timeout
+from pyppeteer.page import Page
 
 from browser import BrowserRender
 
@@ -12,6 +13,12 @@ class BrowserManager:
         self._max_browsers = browsers
         self._max_capacity = max_capacity
         self._browsers: Union[List[BrowserRender], None] = None
+        self._sessions: Dict[str, Page] = {}
+
+    def register_session(self, uuid: str, browser_page: Page):
+        if uuid in self._sessions:
+            raise ValueError('A session with this UUID already exists')
+        self._sessions[uuid] = browser_page
 
     async def create_browsers(self):
         browsers = []
