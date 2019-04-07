@@ -30,6 +30,6 @@ class WebApp:
         run_app(app, host=self.host, port=self.port)
 
 
-def run_server(host='0.0.0.0', port=800, browsers=1, max_cap=10):
+def run_server(host='0.0.0.0', port=8000, browsers=1, max_cap=10):
     w = WebApp(host, port)
     w.run_server(browsers=browsers, max_cap=max_cap)

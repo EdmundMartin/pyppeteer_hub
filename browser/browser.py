@@ -51,7 +51,7 @@ class Response:
 
 class BrowserRender:
 
-    def __init__(self, headless=True, loop=None, proxy=None, auth=None):
+    def __init__(self, headless=False, loop=None, proxy=None, auth=None):
         self.loop = loop if loop else asyncio.get_event_loop()
         self._headless = headless
         self._proxy = proxy

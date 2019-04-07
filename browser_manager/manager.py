@@ -13,12 +13,12 @@ class BrowserManager:
         self._max_browsers = browsers
         self._max_capacity = max_capacity
         self._browsers: Union[List[BrowserRender], None] = None
-        self._sessions: Dict[str, Page] = {}
+        self.sessions: Dict[str, Page] = {}
 
     def register_session(self, uuid: str, browser_page: Page):
-        if uuid in self._sessions:
+        if uuid in self.sessions:
             raise ValueError('A session with this UUID already exists')
-        self._sessions[uuid] = browser_page
+        self.sessions[uuid] = browser_page
 
     async def create_browsers(self):
         browsers = []
