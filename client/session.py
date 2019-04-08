@@ -1,8 +1,11 @@
 from uuid import uuid4
-from typing import Union
+from typing import Any, Union
 from urllib.parse import urljoin
 
 import requests
+
+
+DEFAULT_AGENT = {'Linux': '', 'Windows': '', 'Apple': ''}
 
 
 class SessionException(Exception):
@@ -37,6 +40,20 @@ class Session:
             raise SessionException(resp.json().get('data'))
         return resp.json()
 
+    async def evaluate_script(self, script: str) -> Any:
+        pass
+
+    async def current_url(self) -> str:
+        pass
+
+    async def page_source(self):
+        target_url = urljoin(self._server_path, '/{}/page-source')
+        resp = requests.post(target_url, json={'timeout': self._timeout})
+        if resp.status_code > 200:
+            raise SessionException(resp.json().get('data'))
+        source = resp.json()
+        return source['data']
+
     def close(self):
         target_url = urljoin(self._server_path, '/{}/close'.format(self.session_id))
         resp = requests.post(target_url)
@@ -47,8 +64,5 @@ class Session:
 
 if __name__ == '__main__':
     sess = Session('http://localhost:8000')
-    print(sess.session_id)
     res = sess.get('http://edmundmartin.com', post_load_wait=5)
-    print(res)
     res = sess.close()
-    print(res)

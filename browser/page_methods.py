@@ -1,3 +1,4 @@
+from typing import Any
 import asyncio
 
 import async_timeout
@@ -17,3 +18,23 @@ async def get(page: Page, url: str, timeout: int, post_load_wait: int = 0) -> Re
             raise e
         else:
             return Response(url, resp.url, page_content, resp.status, resp.headers)
+
+
+async def inject(page: Page, script: str, timeout: int, force: bool=False) -> Any:
+    async with async_timeout.timeout(timeout):
+        try:
+            result = await page.evaluate(script, force_expr=force)
+        except Exception as e:
+            raise e
+        else:
+            return result
+
+
+async def page_source(page: Page, timeout: int) -> str:
+    async with async_timeout.timeout(timeout):
+        try:
+            source = await page.content()
+        except Exception as e:
+            raise e
+        else:
+            return source
