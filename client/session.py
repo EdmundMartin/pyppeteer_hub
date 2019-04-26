@@ -5,9 +5,6 @@ from urllib.parse import urljoin
 import requests
 
 
-DEFAULT_AGENT = {'Linux': '', 'Windows': '', 'Apple': ''}
-
-
 class SessionException(Exception):
     pass
 
@@ -29,7 +26,8 @@ class Session:
     def _dial_browser(self):
         sess_id = generate_uuid()
         target_url = urljoin(self._server_path, '/get-session')
-        requests.post(target_url, json={'sess_id': sess_id}, timeout=self._timeout)
+        requests.post(target_url, json={'sess_id': sess_id, 'user_agent': self._user_agent},
+                      timeout=self._timeout)
         return sess_id
 
     def get(self, url: str, post_load_wait: int = 0):
@@ -40,13 +38,21 @@ class Session:
             raise SessionException(resp.json().get('data'))
         return resp.json()
 
-    async def evaluate_script(self, script: str) -> Any:
-        pass
+    def evaluate_script(self, script: str, timeout: int=10, force: bool=False) -> Any:
+        target_url = urljoin(self._server_path, '/{}/inject'.format(self.session_id))
+        resp = requests.post(target_url, json={'script': script, 'timeout': timeout, 'force': force})
+        if resp.status_code > 200:
+            raise SessionException(resp.json().get('data'))
+        return resp.json().get('data')
 
-    async def current_url(self) -> str:
-        pass
+    def current_url(self) -> str:
+        target_url = urljoin(self._server_path, '/{}/current-page'.format(self.session_id))
+        resp = requests.post(target_url)
+        if resp.status_code > 200:
+            raise SessionException(resp.json().get('data'))
+        return resp.json().get('data')
 
-    async def page_source(self):
+    def page_source(self):
         target_url = urljoin(self._server_path, '/{}/page-source')
         resp = requests.post(target_url, json={'timeout': self._timeout})
         if resp.status_code > 200:

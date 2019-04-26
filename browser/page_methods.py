@@ -38,3 +38,12 @@ async def page_source(page: Page, timeout: int) -> str:
             raise e
         else:
             return source
+
+
+async def page_url(page: Page) -> str:
+    try:
+        current_url = page.url
+    except Exception as e:
+        raise e
+    else:
+        return current_url

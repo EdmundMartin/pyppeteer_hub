@@ -4,8 +4,8 @@ from typing import Union
 from aiohttp.web import Application, run_app
 
 from browser_manager.manager import BrowserManager
-from server.requests import add_request_routes
-from server.session import add_session_routes
+from server.requests_routes import add_request_routes
+from server.session_routes import add_session_routes
 
 
 class WebApp:

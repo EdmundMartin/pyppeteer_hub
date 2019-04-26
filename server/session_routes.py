@@ -1,5 +1,5 @@
 from browser_manager.manager import BrowserManager
-from browser.page_methods import get, inject, page_source
+from browser.page_methods import get, inject, page_source, page_url
 
 
 DEFAULT_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'
@@ -50,8 +50,24 @@ async def get_page_source(request: Request):
     page = browser_manager.sessions.get(session_id)
     if not page:
         return json_response({'data': 'Session {} does not exist'.format(session_id)}, status=400)
-    result = await page_source(page, data.get('timeout', 30))
+    try:
+        result = await page_source(page, data.get('timeout', 30))
+    except Exception as e:
+        return json_response({'data': str(e)}, status=400)
     return json_response({'data': result}, status=200)
+
+
+async def current_url(request: Request):
+    session_id = request.match_info['session_id']
+    browser_manager: BrowserManager = request.app['browsers']
+    page = browser_manager.sessions.get(session_id)
+    if not page:
+        return json_response({'data': 'Session {} does not exist'.format(session_id)}, status=400)
+    try:
+        current_page_url = page_url(page)
+    except Exception as e:
+        return json_response({'data': str(e)}, status=400)
+    return json_response({'data': current_page_url})
 
 
 async def close_session(request: Request):
@@ -68,7 +84,8 @@ async def close_session(request: Request):
 def add_session_routes(app):
     app.router.add_post('/get-session', new_session)
     app.router.add_post('/{session_id}/get', get_page)
-    app.router.add_post('/{session_id}/close', close_session)
+    app.router.add_post('/{session_id}/current-page', current_url)
     app.router.add_post('/{session_id}/inject', inject_script)
     app.router.add_post('/{session_id}/page-source', page_source)
+    app.router.add_post('/{session_id}/close', close_session)
     return app
