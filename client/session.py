@@ -30,7 +30,7 @@ class Session:
                       timeout=self._timeout)
         return sess_id
 
-    def get(self, url: str, post_load_wait: int = 0):
+    def get(self, url: str, post_load_wait: int = 0) -> dict:
         target_url = urljoin(self._server_path, '/{}/get'.format(self.session_id))
         resp = requests.post(target_url, json={'url': url, 'timeout': self._timeout,
                                                'post_load': post_load_wait}, timeout=self._timeout)
@@ -38,7 +38,7 @@ class Session:
             raise SessionException(resp.json().get('data'))
         return resp.json()
 
-    def evaluate_script(self, script: str, timeout: int=10, force: bool=False) -> Any:
+    def evaluate_script(self, script: str, timeout: int=10, force: bool=False) -> dict:
         target_url = urljoin(self._server_path, '/{}/inject'.format(self.session_id))
         resp = requests.post(target_url, json={'script': script, 'timeout': timeout, 'force': force})
         if resp.status_code > 200:
@@ -52,13 +52,31 @@ class Session:
             raise SessionException(resp.json().get('data'))
         return resp.json().get('data')
 
-    def page_source(self):
+    def page_source(self) -> str:
         target_url = urljoin(self._server_path, '/{}/page-source')
         resp = requests.post(target_url, json={'timeout': self._timeout})
         if resp.status_code > 200:
             raise SessionException(resp.json().get('data'))
         source = resp.json()
         return source['data']
+
+    def generate_pdf(self) -> bytes:
+        pass
+
+    def type(self) -> None:
+        pass
+
+    def press_key(self) -> None:
+        pass
+
+    def press_keys(self) -> None:
+        pass
+
+    def hold_key(self) -> None:
+        pass
+
+    def release_key(self) -> None:
+        pass
 
     def close(self):
         target_url = urljoin(self._server_path, '/{}/close'.format(self.session_id))

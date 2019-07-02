@@ -7,6 +7,14 @@ endpoints for rendering, as well as providing endpoints for interacting and usin
 manage multiple browsers with multiple tabs allowing (theoretically) high request throughput. There is also a Python 
 client that works with the servers JSON API to provide a Selenium-esque experience.
 
+## Running the Server
+```python
+from server import run_server
+run_server(host='0.0.0.0', port=8000, browsers=1, max_cap=10)
+```
+The server package contains a run_server function. It is here where the number of browsers and tabs is defined. 
+Additionally, the host and port can be set as above.
+
 ## Client
 ```python
 from client import Session
@@ -15,6 +23,14 @@ sess = Session('http://localhost:8000')
 res = sess.get('http://edmundmartin.com', post_load_wait=5)
 res = sess.close()
 ```
+## Client Methods
+### get
+```python
+sess = Session('http://localhost:8000')
+sess = sess.get('http://example.com', post_load_wait=0)
+```
+Makes a get request to a page. A post_load_wait can be set to wait a set number of seconds post page load.
+
 
 ## TODO
 * Implement proper error handling
